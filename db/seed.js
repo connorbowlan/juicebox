@@ -1,9 +1,11 @@
+// Require our client and functions we exported from index.js.
 const {
      client,
      createUser,
      getAllUsers
 } = require('./index');
 
+// A function to try to run a script to drop the table. Catch the error if there is one.
 async function dropTables() {
      try {
           console.log("Starting to drop tables...");
@@ -19,6 +21,7 @@ async function dropTables() {
      }
 }
 
+// A function to try to create a user table. It will throw an error if it already exists.
 async function createTables() {
      try {
           console.log("Starting to build tables...");
@@ -38,6 +41,7 @@ async function createTables() {
      }
 }
 
+// A function to try to create initial users. We're calling createUser() from index.js here.
 async function createInitialUsers() {
      try {
           console.log("Starting to create users...");
@@ -53,16 +57,27 @@ async function createInitialUsers() {
      }
 }
 
+// A function to try to rebuild the database by dropping the table, creating it again, and then
+// adding some new users.
+
+// This operation is defined as 're-seeding'.
 async function rebuildDB() {
      try {
+          // Drop the table. It's gone!
           await dropTables();
+          
+          // Create the table. It's back!
           await createTables();
+
+          // Send it some new data (users) so we have some data to work with!
           await createInitialUsers();
      } catch (error) {
           throw error;
      }
 }
 
+// A function to try to see if our connection works by running a query
+// to get any and all users from the database table 'users'.
 async function testDB() {
      try {
           console.log("Starting to test database...");
@@ -77,7 +92,11 @@ async function testDB() {
      }
 }
 
+// Our function call for rebuildDB() so it executes.
 rebuildDB()
+     // Then test the database.
      .then(testDB)
+     // Catch an error and send it to the console if there is one.
      .catch(console.error)
+     // Conclude our connection to the client.
      .finally(() => client.end());
